@@ -5,9 +5,7 @@ import json
 import os
 import math
 
-# ---------------------------------------------------------
 # INSTELLINGEN
-# ---------------------------------------------------------
 BESTANDSNAAM = 'sensor_data.json'
 GELUID_STIL = 200     
 GELUID_RUMOERIG = 600 
@@ -15,9 +13,7 @@ GELUID_RUMOERIG = 600
 st.set_page_config(layout="wide", page_title="Heidelberglaan 15")
 st.title("Heidelberglaan 15 Bureaubezetting")
 
-# ---------------------------------------------------------
 # STATE MANAGEMENT
-# ---------------------------------------------------------
 if 't1_display' not in st.session_state: st.session_state.t1_display = "Vrij"
 if 't1_raw_last' not in st.session_state: st.session_state.t1_raw_last = "Vrij"
 if 't1_change_time' not in st.session_state: st.session_state.t1_change_time = time.time()
@@ -30,9 +26,7 @@ if 'sound_display_text' not in st.session_state: st.session_state.sound_display_
 if 'sound_level_1to10' not in st.session_state: st.session_state.sound_level_1to10 = 1
 if 'last_sound_update' not in st.session_state: st.session_state.last_sound_update = time.time()
 
-# ---------------------------------------------------------
 # DATA OPHALEN
-# ---------------------------------------------------------
 def read_json_data():
     for i in range(5):
         if not os.path.exists(BESTANDSNAAM):
@@ -59,9 +53,7 @@ raw_t2 = data.get("tafel2", "VRIJ")
 dist_2 = data.get("cm2", 0)
 raw_sound = int(data.get("rawSound", 0))
 
-# ---------------------------------------------------------
-# LOGICA (STATE MACHINE TAFELS)
-# ---------------------------------------------------------
+# LOGICA (Status machine tafels)
 def determine_display_state(current_display, last_raw, change_time, current_raw):
     if current_raw != last_raw:
         change_time = time.time()
@@ -115,9 +107,7 @@ st.session_state.t1_display, st.session_state.t1_raw_last, st.session_state.t1_c
 res_t2 = determine_display_state(st.session_state.t2_display, st.session_state.t2_raw_last, st.session_state.t2_change_time, raw_t2)
 st.session_state.t2_display, st.session_state.t2_raw_last, st.session_state.t2_change_time, text_t2, class_t2 = res_t2
 
-# ---------------------------------------------------------
 # GELUID LOGICA
-# ---------------------------------------------------------
 current_time = time.time()
 if current_time - st.session_state.last_sound_update > 2.0:
     if raw_sound < GELUID_STIL: 
@@ -141,9 +131,7 @@ if current_time - st.session_state.last_sound_update > 2.0:
     st.session_state.sound_level_1to10 = level
     st.session_state.last_sound_update = current_time
 
-# ---------------------------------------------------------
 # HTML GENERATOR
-# ---------------------------------------------------------
 sound_blocks_html = ""
 for i in range(10, 0, -1):
     color_class = ""
@@ -154,8 +142,8 @@ for i in range(10, 0, -1):
     state_class = "active" if st.session_state.sound_level_1to10 >= i else "inactive"
     sound_blocks_html += f'<div class="sound-block {color_class} {state_class}"></div>'
 
-# DEBUG TEXT VOORBEREIDEN
-debug_text = f"🔧 DEBUG: Tafel 1 = {dist_1}cm ({raw_t1}) | Tafel 2 = {dist_2}cm ({raw_t2}) | Geluid = {raw_sound} (Level {st.session_state.sound_level_1to10})"
+# Debug tekst voorbereiden
+debug_text = f" DEBUG: Tafel 1 = {dist_1}cm ({raw_t1}) | Tafel 2 = {dist_2}cm ({raw_t2}) | Geluid = {raw_sound} (Level {st.session_state.sound_level_1to10})"
 
 html_content = f"""
 <!DOCTYPE html>
@@ -300,7 +288,7 @@ html_content = f"""
 </html>
 """
 
-# Renderen (iets meer hoogte gegeven voor de footer)
+
 components.html(html_content, height=650)
 
 time.sleep(0.5)
